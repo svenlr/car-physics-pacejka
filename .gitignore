@@ -1,3 +1,9 @@
+# CLion / PyCharm
+.idea/
+
+# generated simulation solver
+generated/
+
 # Prerequisites
 *.d
 
@@ -30,3 +36,5 @@
 *.exe
 *.out
 *.app
+
+__pycache__/
