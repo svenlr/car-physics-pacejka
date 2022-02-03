@@ -3,8 +3,8 @@ from matplotlib import pyplot as plt
 import casadi
 from casadi import MX
 
-from car_sim_gen.car_model import calc_motor_torque
-from car_sim_gen.constants import CarConstants
+from car_model import calc_motor_torque
+from constants import CarConstants
 
 if __name__ == '__main__':
     c = CarConstants()

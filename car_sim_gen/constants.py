@@ -35,7 +35,7 @@ class WheelConstants:
         self.m_w = 0.05  # [kg] mass per wheel
 
         # Pacejka tire model parameters
-        self.Fz0 = 3  # [N]
+        self.Fz0 = 5  # [N]
         self.a0 = 0.008  # [m]
         self.b = 0.007  # [m]
         self.radius = 0.02625  # [m] tire radius
@@ -73,13 +73,6 @@ class WheelConstants:
         # peak value at Fz=Fz0
         self.Dx0 = c.mu_x0 * c.Fz0
         self.Bx0 = c.C_Fk0 / (c.Cx * c.Dx0)
-
-        # print("C_Fa0", self.C_Fa0)
-        # print("Dy0", self.Dy0)
-        # print("By0", self.By0)
-        # print("C_Fk0", self.C_Fk0)
-        # print("Dx0", self.Dx0)
-        # print("Bx0", self.Bx0)
 
 
 def init_4w_positions(l_f, l_r, wheel_sep):

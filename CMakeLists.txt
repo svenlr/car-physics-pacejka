@@ -15,8 +15,8 @@ file(GLOB_RECURSE PY_SIM_GEN_FILES CONFIGURE_DEPENDS car_sim_gen/*)
 
 add_generated_library(
         TARGET acados_sim_solver_car
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/car_sim_gen/generate_car_sim.py
-        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+        COMMAND python3 car_sim_gen/generate_car_sim.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/generated/libacados_sim_solver_car.so
         DEPENDS ${PY_SIM_GEN_FILES}
         INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/generated
@@ -29,4 +29,16 @@ set(ACADOS_INCLUDE_DIRS
         )
 set(ACADOS_LIBRARIES
         -L$ENV{ACADOS_SOURCE_DIR}/lib -lacados -lhpipm -lblasfeo -lm
+        )
+
+add_library(car_physics_pacejka SHARED
+        CarSimulation.cpp
+        )
+target_include_directories(car_physics_pacejka SYSTEM PRIVATE
+        ${ACADOS_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/generated
+        )
+target_link_libraries(car_physics_pacejka
+        ${ACADOS_LIBRARIES}
+        acados_sim_solver_car
         )

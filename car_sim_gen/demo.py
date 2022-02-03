@@ -1,8 +1,6 @@
-import os
-
 import matplotlib.pyplot as plt
 import numpy as np
-from car_sim_gen.generate_car_sim import generate_car_sim
+from generate_car_sim import generate_car_sim
 
 
 def step(sim_solver, u):

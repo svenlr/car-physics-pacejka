@@ -4,8 +4,8 @@ import casadi
 import numpy as np
 import matplotlib.pyplot as plt
 
-from car_sim_gen.car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces
-
+from car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces
+from car_sim_gen.constants import WheelConstants
 
 if __name__ == '__main__':
     model, c, q = create_car_model()
@@ -16,12 +16,14 @@ if __name__ == '__main__':
     v_y = casadi.MX.sym("v_y")
     r = casadi.MX.sym("r")
     delta = casadi.MX.sym("delta0")
-    mu_x0 = casadi.MX.sym("mu_x0")
-    mu_y0 = casadi.MX.sym("mu_y0")
-    Fz0 = casadi.MX.sym("Fz0")
+    mu_x = casadi.MX.sym("mu_x", c.n_wheels, 1)
+    mu_y = casadi.MX.sym("mu_y", c.n_wheels, 1)
+    Fz = casadi.MX.sym("Fz", c.n_wheels, 1)
     x = casadi.vertcat(v_x, v_y, r)
     u = casadi.vertcat(delta)
-    p = casadi.vertcat(mu_x0, mu_y0, Fz0)
+    p = casadi.vertcat(Fz, mu_x, mu_y)
+    cw0: WheelConstants = c.wheel_constants[0]
+    p_val = [cw0.Fz0] * c.n_wheels + [cw0.mu_x0] * c.n_wheels + [cw0.mu_y0] * c.n_wheels
 
     vx, vy = calc_wheel_centric_velocities(x, u, c, 0)
     sigma_x, sigma_y = calc_sigma_xy(vr, v_wx, v_wy)
@@ -30,8 +32,7 @@ if __name__ == '__main__':
     calc_forces = casadi.Function("calc_forces", [vr, v_wx, v_wy, p], [Fx, Fy], dict())
 
     print(calc_slip([0, 0, -1], [0]))
-    sys.exit(0)
-    print(calc_forces(0, 0, 0, [1, 1, 3]))
+    print(calc_forces(0, 0, 0, [3] * 4 + [1] * 8))
 
     fig, plots = plt.subplots(2, 2)
 
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     Fy_vals = []
     Fx_vals = []
     for vsy_val in vsy_vals:
-        Fx_val, Fy_val = calc_forces(1, 1.1, vsy_val, [1.3, 1, 3])
+        Fx_val, Fy_val = calc_forces(1, 1.1, vsy_val, p_val)
         Fy_vals.append(Fy_val)
         Fx_vals.append(Fx_val)
     plots[0,0].plot(vsy_vals, Fy_vals, label="Fy")
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     Fy_vals = []
     Fx_vals = []
     for vr_val in vr_vals:
-        Fx_val, Fy_val = calc_forces(vr_val, 1.0, vsy_val, [1.3, 1, 3])
+        Fx_val, Fy_val = calc_forces(vr_val, 1.0, vsy_val, p_val)
         Fy_vals.append(Fy_val)
         Fx_vals.append(Fx_val)
     plots[1,0].plot(vr_vals, Fy_vals, label="Fy [N]")
@@ -70,18 +71,20 @@ if __name__ == '__main__':
     for Fz_val in Fz_vals:
         Fx_vals = []
         for vr_val in vr_vals:
-            Fx_val, Fy_val = calc_forces(vr_val, 1.0, vsy_val, [1.3, 1, Fz_val])
+            Fx_val, Fy_val = calc_forces(vr_val, 1.0, vsy_val,
+                                         [Fz_val] * c.n_wheels + [1.3] * c.n_wheels + [1] * c.n_wheels)
             Fx_vals.append(Fx_val)
         plots[0,1].plot(vr_vals, Fx_vals)
     plots[0,1].set_xlabel("Vr [m/s]")
     plots[0,1].set_ylabel("Fx [N]")
-    plots[0,1].set_title('Vx=1.0 Vsy=0.0')
+    plots[0,1].set_title('Vx=1.0 Vsy=0.0 (Varying Fz)')
 
     Fz_vals = np.linspace(0, 10, num=100)
     vsy_val = -0.1
     Fy_vals = []
     for Fz_val in Fz_vals:
-        Fx_val, Fy_val = calc_forces(1.0, 1.0, vsy_val, [1.3, 1, Fz_val])
+        Fx_val, Fy_val = calc_forces(1.0, 1.0, vsy_val,
+                                     [Fz_val] * c.n_wheels + [1.3] * c.n_wheels + [1] * c.n_wheels)
         Fy_vals.append(Fy_val)
     plt.plot(Fz_vals, Fy_vals)
     plots[1,1].set_xlabel('Fz [N]')

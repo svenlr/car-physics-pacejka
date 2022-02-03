@@ -5,8 +5,8 @@ import numpy as np
 
 from acados_template.acados_ocp_formulation_helper import get_symbol, auto_xdot
 
-from .constants import CarConstants, WheelConstants
-from .quantities import CarPhysicalQuantities, WheelPhysicalQuantities
+from constants import CarConstants, WheelConstants
+from quantities import CarPhysicalQuantities, WheelPhysicalQuantities
 
 
 def create_car_model(constants=None, model_name="car"):
@@ -26,8 +26,8 @@ def create_car_model(constants=None, model_name="car"):
     r = MX.sym("r")  # r = yaw rate, often called omega as well
     # transmissions are not modeled => the motor / differential dynamics should include any transmission dynamics
     omega = MX.sym("omega")  # base gear angular velocity
-    d_omega_f = MX.sym("omega_f")  # offset of angular velocities at the front differential
-    d_omega_r = MX.sym("omega_r")  # offset of angular velocities at the rear differential
+    d_omega_f = MX.sym("d_omega_f")  # offset of angular velocities at the front differential
+    d_omega_r = MX.sym("d_omega_r")  # offset of angular velocities at the rear differential
 
     # controls
     dc = MX.sym("dc")
@@ -39,9 +39,9 @@ def create_car_model(constants=None, model_name="car"):
 
     # parameters
     model.p = vertcat(
-        *[MX.sym("Fz{}".format(i)) for i in range(c.n_wheels)],
-        *[MX.sym("mu_x{}".format(i)) for i in range(c.n_wheels)],
-        *[MX.sym("mu_y{}".format(i)) for i in range(c.n_wheels)],
+        MX.sym("Fz", c.n_wheels, 1),
+        MX.sym("mu_x", c.n_wheels, 1),
+        MX.sym("mu_y", c.n_wheels, 1),
     )
 
     model.u = vertcat(
@@ -146,9 +146,9 @@ def calc_wheel_centric_velocities(x: MX, u: MX, c: CarConstants, wheel_idx: int)
 
 
 def calc_wheel_centric_forces(sigma_x: MX, sigma_y: MX, p: MX, cw: WheelConstants, wheel_idx: int):
-    Fz = get_symbol(p, "Fz{}".format(wheel_idx))
-    mu_y = get_symbol(p, "mu_y{}".format(wheel_idx))
-    mu_x = get_symbol(p, "mu_x{}".format(wheel_idx))
+    Fz = get_symbol(p, "Fz")[wheel_idx]
+    mu_y = get_symbol(p, "mu_y")[wheel_idx]
+    mu_x = get_symbol(p, "mu_x")[wheel_idx]
 
     C_Fa = cw.c1 * cw.c2 * cw.Fz0 * sin(cw.Cz * atan(Fz / (cw.c2 * cw.Fz0)))
     C_Fk = cw.c8 * Fz
