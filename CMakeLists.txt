@@ -13,6 +13,11 @@ include(cmake/add_generated_library.cmake)
 
 file(GLOB_RECURSE PY_SIM_GEN_FILES CONFIGURE_DEPENDS car_sim_gen/*)
 
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+    message("-- Creating directory ${CMAKE_CURRENT_SOURCE_DIR}/generated")
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+endif()
+
 add_generated_library(
         TARGET acados_sim_solver_car
         COMMAND python3 car_sim_gen/generate_car_sim.py
