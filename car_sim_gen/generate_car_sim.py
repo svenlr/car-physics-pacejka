@@ -33,8 +33,11 @@ if __name__ == '__main__':
     model = sim_solver.sim_struct.model
     model_types_h = generate_model_structs(model, sim_solver.sim_struct.solver_options.T, "car_sim",
                                            default_params=sim_solver.sim_struct.parameter_values)
-    with open(os.path.join(top_dir, "generated", "car_model_types.h")) as f:
-        update_model_types_h = f.read() != model_types_h
+    try:
+        with open(os.path.join(top_dir, "generated", "car_model_types.h")) as f:
+            update_model_types_h = f.read() != model_types_h
+    except FileNotFoundError:
+        update_model_types_h = True
     if update_model_types_h:
         with open(os.path.join(top_dir, "generated", "car_model_types.h"), "w+") as f:
             f.write(model_types_h)
