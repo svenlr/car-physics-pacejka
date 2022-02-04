@@ -10,6 +10,7 @@ if(NOT DEFINED ENV{ACADOS_SOURCE_DIR})
 endif()
 
 include(cmake/add_generated_library.cmake)
+include(cmake/download_matplotlib.cmake)
 
 file(GLOB_RECURSE PY_SIM_GEN_FILES CONFIGURE_DEPENDS car_sim_gen/*)
 
@@ -47,3 +48,9 @@ target_link_libraries(car_physics_pacejka
         ${ACADOS_LIBRARIES}
         acados_sim_solver_car
         )
+
+if (Python3_FOUND)
+    add_executable(demo demo.cpp)
+    target_include_directories(demo SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/generated ${matplotlib_INCLUDE_DIRS})
+    target_link_libraries(demo car_physics_pacejka ${matplotlib_LIBRARIES})
+endif()

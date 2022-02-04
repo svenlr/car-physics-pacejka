@@ -6,6 +6,8 @@
 
 #include "acados_sim_solver_car.h"
 
+#include <cmath>
+
 using namespace car_sim;
 
 CarSimulation::CarSimulation() {
@@ -19,6 +21,7 @@ CarSimulation::~CarSimulation() {
 }
 
 int CarSimulation::step() {
+    state x0 = x;
     sim_in_set(sim->acados_sim_config, sim->acados_sim_dims,
                sim->acados_sim_in, "x", &x);
     sim_in_set(sim->acados_sim_config, sim->acados_sim_dims,
@@ -26,17 +29,20 @@ int CarSimulation::step() {
     int status = car_acados_sim_solve(sim);
     sim_out_get(sim->acados_sim_config, sim->acados_sim_dims,
                 sim->acados_sim_out, "x", &x);
+    calc_accelerations_on_car(x0);
     return status;
+}
+
+void CarSimulation::calc_accelerations_on_car(const state &x0) {
+    double vx0_world = x0.v_x * std::cos(x0.phi) - x0.v_y * std::sin(x0.phi);
+    double vy0_world = x0.v_x * std::sin(x0.phi) + x0.v_y * std::cos(x0.phi);
+    double vx_world = x.v_x * std::cos(x.phi) - x.v_y * std::sin(x.phi);
+    double vy_world = x.v_x * std::sin(x.phi) + x.v_y * std::cos(x.phi);
+    avg_lin_acc_x = (vx_world - vx0_world) / get_time_step_size();
+    avg_lin_acc_y = (vy_world - vy0_world) / get_time_step_size();
+    avg_ang_acc_phi = (x.r - x0.r) / get_time_step_size();
 }
 
 double CarSimulation::get_time_step_size() const {
     return TIME_STEP;
-}
-
-int CarSimulation::num_x() const {
-    return CAR_NX;
-}
-
-int CarSimulation::num_u() const {
-    return CAR_NU;
 }

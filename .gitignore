@@ -1,5 +1,6 @@
 # CLion / PyCharm
 .idea/
+cmake-build-debug/
 
 # generated simulation solver
 generated/

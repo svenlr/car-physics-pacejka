@@ -14,16 +14,16 @@ def main():
     sim_solver.set("u", np.array([1.0, 0, 0, 0, 0]))
     x_traj = []
     for i in range(1000):
-        step(sim_solver, np.array([0.3, 0, 0, 0, 0]))
+        step(sim_solver, np.array([0.5, 0, 0, 0, 0]))
         x_traj.append(sim_solver.get("x"))
     for i in range(1000):
-        step(sim_solver, np.array([0.7, 0.2, 0.2, 0, 0]))
+        step(sim_solver, np.array([0.8, 0.2, 0.2, 0, 0]))
+        x_traj.append(sim_solver.get("x"))
+    for i in range(1000):
+        step(sim_solver, np.array([1.0, 0.0, 0.0, 0, 0]))
         x_traj.append(sim_solver.get("x"))
     for i in range(2000):
-        step(sim_solver, np.array([0.8, 0.0, 0.0, 0, 0]))
-        x_traj.append(sim_solver.get("x"))
-    for i in range(2000):
-        step(sim_solver, np.array([0.8, -0.3, -0.3, 0, 0]))
+        step(sim_solver, np.array([1.0, -0.3, -0.3, 0, 0]))
         x_traj.append(sim_solver.get("x"))
 
     print("final state", sim_solver.get("x"))

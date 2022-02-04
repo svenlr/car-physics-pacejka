@@ -20,10 +20,6 @@ namespace car_sim {
 
         double get_time_step_size() const;
 
-        int num_x() const;
-
-        int num_u() const;
-
         /** no copy allowed because of the C pointer */
         CarSimulation(const CarSimulation &other) = delete;
 
@@ -33,9 +29,15 @@ namespace car_sim {
     public:
         state x;
         control u;
+        double avg_lin_acc_x = 0;
+        double avg_lin_acc_y = 0;
+        double avg_ang_acc_phi = 0;
 
     private:
         sim_solver_capsule *sim = nullptr;
+
+    private:
+        void calc_accelerations_on_car(const state &x0);
     };
 
 }
