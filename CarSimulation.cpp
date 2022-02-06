@@ -22,6 +22,7 @@ CarSimulation::~CarSimulation() {
 
 int CarSimulation::step() {
     state x0 = x;
+    car_acados_sim_update_params(sim, (double *) &p, int(CAR_NP));
     sim_in_set(sim->acados_sim_config, sim->acados_sim_dims,
                sim->acados_sim_in, "x", &x);
     sim_in_set(sim->acados_sim_config, sim->acados_sim_dims,

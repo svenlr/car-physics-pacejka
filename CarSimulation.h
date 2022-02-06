@@ -29,6 +29,7 @@ namespace car_sim {
     public:
         state x;
         control u;
+        params p;
         double avg_lin_acc_x = 0;
         double avg_lin_acc_y = 0;
         double avg_ang_acc_phi = 0;
