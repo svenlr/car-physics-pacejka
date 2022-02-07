@@ -14,7 +14,7 @@ class CarConstants:
         wheel_positions = init_4w_positions(l_f, l_r, wheel_sep)
         self.wheel_constants = [WheelConstants(pos[0], pos[1]) for pos in wheel_positions]
 
-        self.mu_diff_visc = 0.001
+        self.mu_diff_visc = 1e-5
 
         # drive train parameters
 
@@ -46,7 +46,7 @@ class WheelConstants:
         self.Cx = 1.5  # shape
         self.Ex = -1.0  # curvature
         self.mu_y0 = 1.0  # friction coefficient scaling
-        self.mu_x0 = 1.0  # friction coefficient scaling
+        self.mu_x0 = 1.26  # friction coefficient scaling
         self.c1 = 8.0
         self.c2 = 1.33
         self.c3 = 0.25

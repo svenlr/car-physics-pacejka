@@ -23,7 +23,9 @@ if __name__ == '__main__':
     u = casadi.vertcat(delta)
     p = casadi.vertcat(Fz, mu_x, mu_y)
     cw0: WheelConstants = c.wheel_constants[0]
-    p_val = [cw0.Fz0] * c.n_wheels + [cw0.mu_x0] * c.n_wheels + [cw0.mu_y0] * c.n_wheels
+    mu_x_val = 0.5
+    mu_y_val = 0.4
+    p_val = [cw0.Fz0] * c.n_wheels + [mu_x_val] * c.n_wheels + [mu_y_val] * c.n_wheels
 
     vx, vy = calc_wheel_centric_velocities(x, u, c, 0)
     sigma_x, sigma_y = calc_sigma_xy(vr, v_wx, v_wy)
@@ -72,7 +74,7 @@ if __name__ == '__main__':
         Fx_vals = []
         for vr_val in vr_vals:
             Fx_val, Fy_val = calc_forces(vr_val, 1.0, vsy_val,
-                                         [Fz_val] * c.n_wheels + [1.3] * c.n_wheels + [1] * c.n_wheels)
+                                         [Fz_val] * c.n_wheels + [mu_x_val] * c.n_wheels + [mu_y_val] * c.n_wheels)
             Fx_vals.append(Fx_val)
         plots[0,1].plot(vr_vals, Fx_vals)
     plots[0,1].set_xlabel("Vr [m/s]")
@@ -84,7 +86,7 @@ if __name__ == '__main__':
     Fy_vals = []
     for Fz_val in Fz_vals:
         Fx_val, Fy_val = calc_forces(1.0, 1.0, vsy_val,
-                                     [Fz_val] * c.n_wheels + [1.3] * c.n_wheels + [1] * c.n_wheels)
+                                     [Fz_val] * c.n_wheels + [mu_x_val] * c.n_wheels + [mu_y_val] * c.n_wheels)
         Fy_vals.append(Fy_val)
     plt.plot(Fz_vals, Fy_vals)
     plots[1,1].set_xlabel('Fz [N]')
