@@ -4,8 +4,8 @@ import numpy as np
 class CarConstants:
     def __init__(self):
         # Physical parameters
-        self.m = 1.9  # [kg] body mass
-        self.I_z = 0.034  # inertia around Z
+        self.m = 2.0  # [kg] overall mass: body + wheels
+        self.I_z = 0.0322849  # inertia around Z of the entire vehicle
         self.Im = 1e-5  # motor and gear inertia
 
         l_f = 0.13  # [m] distance from center of gravity to front axle

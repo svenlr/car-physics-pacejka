@@ -61,23 +61,13 @@ def create_car_model(constants=None, model_name="car"):
         d_omega_r,
     )
 
-    q.wheel_quantities[0].v_r = (omega + d_omega_f / 2) * c.wheel_constants[0].radius
-    q.wheel_quantities[1].v_r = (omega - d_omega_f / 2) * c.wheel_constants[1].radius
-    q.wheel_quantities[2].v_r = (omega + d_omega_r / 2) * c.wheel_constants[2].radius
-    q.wheel_quantities[3].v_r = (omega - d_omega_r / 2) * c.wheel_constants[3].radius
-
     Fx = None
     Fy = None
     car_torque = None
     tire_fb_torque = None
     tire_back_torques = [0.] * c.n_wheels
     for i in range(c.n_wheels):
-        vr = q.wheel_quantities[i].v_r
-        vx_w, vy_w = calc_wheel_centric_velocities(model.x, model.u, c, i)
-        kappa, tan_alpha = calc_sigma_xy(vr, vx_w, vy_w)
-        Fx_w, Fy_w = calc_wheel_centric_forces(kappa, tan_alpha, model.p, c.wheel_constants[i], i)
-        Fx_i, Fy_i = wheel_force_to_car_force(model.u, i, Fx_w, Fy_w)
-        car_torque_i = car_force_to_car_torque(c, i, Fx_i, Fy_i)
+        Fx_i, Fx_w, Fy_i, car_torque_i = calc_wheel_physics(model, i, c)
         car_torque = car_torque + car_torque_i if car_torque is not None else car_torque_i
         Fx = Fx + Fx_i if Fx is not None else Fx_i
         Fy = Fy + Fy_i if Fy is not None else Fy_i
@@ -117,6 +107,19 @@ def create_car_model(constants=None, model_name="car"):
     return model, c, q
 
 
+def calc_wheel_physics(model, i, c):
+    omega = get_symbol(model.x, "omega")
+    d_omega = get_symbol(model.x, "d_omega_f" if i <= 1 else "d_omega_r")
+    side = 1 if i % 2 == 0 else -1
+    vr = (omega + side * d_omega / 2) * c.wheel_constants[0].radius
+    vx_w, vy_w = calc_wheel_centric_velocities(model.x, model.u, c, i)
+    kappa, tan_alpha = calc_sigma_xy(vr, vx_w, vy_w)
+    Fx_w, Fy_w = calc_wheel_centric_forces(kappa, tan_alpha, model.p, c.wheel_constants[i], i)
+    Fx_i, Fy_i = wheel_force_to_car_force(model.u, i, Fx_w, Fy_w)
+    car_torque_i = car_force_to_car_torque(c, i, Fx_i, Fy_i)
+    return Fx_i, Fx_w, Fy_i, car_torque_i
+
+
 def calc_motor_torque(c, dc, omega):
     return c.Tm_p * dc - c.Tm_emv * omega - c.Tm_drag * omega * omega * sign(omega)
 
@@ -125,8 +128,9 @@ def calc_sigma_xy(vr, vx, vy):
     vsy = vy
     vsx = vx - vr
     vr_safe = casadi.fmax(casadi.fabs(vr), 1e-3)
+    vx_safe = casadi.fmax(casadi.fabs(vx), 1e-3)
     sigma_x = -vsx / vr_safe
-    sigma_y = -vsy / vr_safe
+    sigma_y = -vsy / vx_safe
     return sigma_x, sigma_y
 
 

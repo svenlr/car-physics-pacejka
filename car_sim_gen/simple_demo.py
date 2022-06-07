@@ -1,10 +1,13 @@
+import os
+
 import casadi
 import matplotlib.pyplot as plt
 import numpy as np
+from acados_template import AcadosSim, AcadosSimSolver
 
-from car_sim_gen.car_model import calc_wheel_physics
+from car_sim_gen.simple_car_model import create_simple_bicycle_car_model, calc_forces, CarModelParameters, \
+    CarModelPhysicalQuantities
 from generate_car_sim import generate_car_sim
-from car_sim_gen.constants import CarConstants
 
 
 def step(sim_solver, u):
@@ -14,45 +17,32 @@ def step(sim_solver, u):
 
 
 def main():
-    sim_solver = generate_car_sim("/tmp/generated", time_step=0.001, num_stages=1, num_steps=1)
-    sim_solver.set("u", np.array([1.0, 0, 0, 0, 0]))
+    sim_solver = generate_simple_car_sim("/tmp/generated_simple", time_step=0.001, num_stages=1, num_steps=1)
+    sim_solver.set("u", np.array([1.0, 0, 0]))
+    p = CarModelParameters()
+    q = CarModelPhysicalQuantities()
     model = sim_solver.sim_struct.model
-    c = CarConstants()
-    Fx_i, Fx_w, Fy_i, car_torque_i = calc_wheel_physics(model, 0, c)
-    wheel0_forces_func = casadi.Function("wheel0_forces_func", [model.x, model.u, model.p], [Fx_i, Fy_i, car_torque_i])
+    F_y_f, F_y_r, Fxf, Fxr = calc_forces(sim_solver.sim_struct.model, p, q)
+    forces_func = casadi.Function("calc_forces", [model.x, model.u], [F_y_f, F_y_r])
     x_traj = []
     for i in range(1000):
-        step(sim_solver, np.array([0.1, 0, 0, 0, 0]))
+        step(sim_solver, np.array([0.1, 0, 0]))
+        x_traj.append(sim_solver.get("x"))
+    for i in range(1000):
+        step(sim_solver, np.array([0.5, 0, 0]))
         x_traj.append(sim_solver.get("x"))
 
-    # 0.05 => R=5.1
-    # 0.1 => R=2.55
-    # 0.15 => R=1.75
-    # 0.2 => R=1.32
-
     delta = 0.1
-    for j in np.linspace(0.2, 1.0, num=20):
-        for i in range(1000):
-            step(sim_solver, np.array([j, delta, delta, 0, 0]))
+    for j in np.linspace(0.5,  0.7, num=10):
+        for i in range(5000):
+            step(sim_solver, np.array([j, delta, 0]))
             x_traj.append(sim_solver.get("x"))
-
-        Fx_val, Fy_val, car_torque_val = wheel0_forces_func(sim_solver.get("x"), np.array([j, delta, delta, 0, 0]),
-                                                            sim_solver.sim_struct.parameter_values)
-        print(Fx_val, Fy_val, car_torque_val)
-    # for i in range(3000):
-    #     step(sim_solver, np.array([j, delta, delta, 0, 0]))
-    #     x_traj.append(sim_solver.get("x"))
-    #     Fx_val, Fy_val, car_torque_val = wheel0_forces_func(sim_solver.get("x"), np.array([j, delta, delta, 0, 0]),
-    #                        sim_solver.sim_struct.parameter_values)
-    #     print(Fx_val, Fy_val, car_torque_val)
+        print(forces_func(sim_solver.get("x"), np.array([j, delta, 0])))
     # for i in range(1000):
-    #     step(sim_solver, np.array([0.8, 0.2, 0.2, 0, 0]))
+    #     step(sim_solver, np.array([1.0, 0, 0]))
     #     x_traj.append(sim_solver.get("x"))
-    # for i in range(1000):
-    #     step(sim_solver, np.array([1.0, 0.0, 0.0, 0, 0]))
-    #     x_traj.append(sim_solver.get("x"))
-    # for i in range(2000):
-    #     step(sim_solver, np.array([1.0, -0.3, -0.3, 0, 0]))
+    # for i in range(5000):
+    #     step(sim_solver, np.array([j, delta, 0]))
     #     x_traj.append(sim_solver.get("x"))
 
     print("final state", sim_solver.get("x"))
@@ -66,6 +56,22 @@ def main():
     plt.gca().set_ylabel("y [m]")
     plt.savefig('../doc/demo.png')
     plt.show()
+
+
+def generate_simple_car_sim(code_export_dir, time_step=0.001, num_stages=1, num_steps=1):
+    model, c, q = create_simple_bicycle_car_model()
+    sim = AcadosSim()
+    sim.model = model
+
+    sim.solver_options.T = time_step
+    sim.solver_options.integrator_type = "ERK"
+    sim.solver_options.num_stages = num_stages
+    sim.solver_options.num_steps = num_steps
+    sim.code_export_directory = code_export_dir
+
+    sim.parameter_values = np.array([])
+
+    return AcadosSimSolver(sim, json_file=os.path.join(sim.code_export_directory, "acados_sim.json"))
 
 
 def draw_car(x, y, phi):

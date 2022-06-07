@@ -8,4 +8,4 @@ class CarPhysicalQuantities:
 
 class WheelPhysicalQuantities:
     def __init__(self):
-        self.v_r = MX()
+        pass

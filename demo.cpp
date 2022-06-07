@@ -18,15 +18,33 @@ int main(int argc, char **argv) {
 
     car_sim::state approx_state;
 
-    sim.u.dc = 0.5;
+    sim.u.dc = 0.1;
     step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.8, 0.2, 0.2, 0, 0};
+    sim.u = {0.1, 0.1, 0.1, 0, 0};
     step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {1.0, 0.0, 0.0, 0, 0};
+    sim.u = {0.2, 0.1, 0.1, 0, 0};
     step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {1.0, -0.3, -0.3, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 2000);
+    sim.u = {0.3, 0.1, 0.1, 0, 0};
+    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+    sim.u = {0.4, 0.1, 0.1, 0, 0};
+    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+    sim.u = {0.5, 0.1, 0.1, 0, 0};
+    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+    sim.u = {0.6, 0.1, 0.1, 0, 0};
+    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+    sim.u = {0.7, 0.1, 0.1, 0, 0};
+    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+    sim.u = {0.8, 0, 0, 0};
+    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+    sim.u = {0.8, -0.1, -0.1, 0, 0};
+    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+//    sim.u = {1.0, -0.3, -0.3, 0, 0};
+//    step_sim(sim, x_traj, x_traj_approx, approx_state, 2000);
 
+    std::vector<double> s;
+    std::vector<double> r;
+    std::vector<double> omega;
+    std::vector<double> v_x;
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> xa;
@@ -36,15 +54,25 @@ int main(int argc, char **argv) {
         const auto &state = x_traj[i];
         x.push_back(state.X);
         y.push_back(state.Y);
+        s.push_back(i);
+        r.push_back(state.r);
+        omega.push_back(state.omega / 100);
+        v_x.push_back(state.v_x);
     }
     for (int i = 0; i < x_traj_approx.size(); i += step) {
         const auto &state_approx = x_traj_approx[i];
         xa.push_back(state_approx.X);
         ya.push_back(state_approx.Y);
     }
-    plt::plot(x, y);
-    plt::plot(xa, ya, "x");
-    plt::axis("equal");
+//    plt::plot(x, y);
+//    plt::plot(xa, ya, "x");
+//    plt::axis("equal");
+//    plt::show();
+
+    plt::named_plot("r", s, r);
+    plt::named_plot("omega", s, omega);
+    plt::named_plot("v_x", s, v_x);
+    plt::legend();
     plt::show();
 }
 
