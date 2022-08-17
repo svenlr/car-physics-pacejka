@@ -62,7 +62,7 @@ with the acados solver in the other library.
 ## Appendix
 
 ### Model
-States: $v_x, v_y, r, \omega, \omega_{\triangle f}, \omega_{\triangle r}$  
+States: $v_x, v_y, r, \omega, \omega_{f \triangle}, \omega_{r \triangle}$  
 Linear velocities, angular velocity, motor velocity, differential velocities
   
 Controls: $DC, \delta_{fl},\delta_{fr},\delta_{rl},\delta_{rr}$  
@@ -73,11 +73,11 @@ Spatial states: $v_x, v_y, r$
 ![friction model](doc/spatial_model.png)
 
 #### Drive-train view of the model
-Drive-train states: $\omega, \omega_{\triangle f}, \omega_{\triangle r}$  
-$\omega_{\triangle f}, \omega_{\triangle r}$ are the relative velocities 
-in-between front wheels and in-between rear wheels respectively
+Drive-train states: $\omega, \omega_{f \triangle}, \omega_{r \triangle}$  
+$\omega_{f \triangle}, \omega_{r \triangle}$ are the relative velocities 
+in-between front wheels and in-between rear wheels respectively.
 
-![drive train model](doc/drive_train_model.png)
+<img src="doc/drive_train_model.png" alt="drive train model" width="500"/>
 
 ### Plots generated with the implemented Pacejka-type tire model
 ![tire model](doc/tire_model.png)
