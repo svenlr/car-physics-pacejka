@@ -39,9 +39,9 @@ void CarSimulation::calc_accelerations_on_car(const state &x0) {
     double vy0_world = x0.v_x * std::sin(x0.phi) + x0.v_y * std::cos(x0.phi);
     double vx_world = x.v_x * std::cos(x.phi) - x.v_y * std::sin(x.phi);
     double vy_world = x.v_x * std::sin(x.phi) + x.v_y * std::cos(x.phi);
-    avg_lin_acc_x = (vx_world - vx0_world) / get_time_step_size();
-    avg_lin_acc_y = (vy_world - vy0_world) / get_time_step_size();
-    avg_ang_acc_phi = (x.r - x0.r) / get_time_step_size();
+    lin_acc_x = (vx_world - vx0_world) / get_time_step_size();
+    lin_acc_y = (vy_world - vy0_world) / get_time_step_size();
+    ang_acc_phi = (x.r - x0.r) / get_time_step_size();
 }
 
 double CarSimulation::get_time_step_size() const {

@@ -19,28 +19,19 @@ int main(int argc, char **argv) {
     car_sim::state approx_state;
 
     sim.u.dc = 0.1;
+    // sim for 1 second
     step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.1, 0.1, 0.1, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
+    // steer both front angles to the left
     sim.u = {0.2, 0.1, 0.1, 0, 0};
+    // sim for 1 second
     step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.3, 0.1, 0.1, 0, 0};
+    // steer both front angles to the right while accelerating
+    sim.u = {1.0, -0.1, -0.1, 0, 0};
+    // sim for 1 second
     step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.4, 0.1, 0.1, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.5, 0.1, 0.1, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.6, 0.1, 0.1, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.7, 0.1, 0.1, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.8, 0, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-    sim.u = {0.8, -0.1, -0.1, 0, 0};
-    step_sim(sim, x_traj, x_traj_approx, approx_state, 1000);
-//    sim.u = {1.0, -0.3, -0.3, 0, 0};
-//    step_sim(sim, x_traj, x_traj_approx, approx_state, 2000);
 
+
+    // plot the trajectory during the above simulation
     std::vector<double> s;
     std::vector<double> r;
     std::vector<double> omega;
@@ -83,17 +74,17 @@ step_sim(car_sim::CarSimulation &sim, std::vector<car_sim::state> &x_traj, std::
         sim.step();
         x_traj.push_back(sim.x);
 
-        approx_state.v_x += 0.5 * sim.avg_lin_acc_x * sim.get_time_step_size();
+        approx_state.v_x += 0.5 * sim.lin_acc_x * sim.get_time_step_size();
         approx_state.X += approx_state.v_x * sim.get_time_step_size();
-        approx_state.v_x += 0.5 * sim.avg_lin_acc_x * sim.get_time_step_size();
+        approx_state.v_x += 0.5 * sim.lin_acc_x * sim.get_time_step_size();
 
-        approx_state.v_y += 0.5 * sim.avg_lin_acc_y * sim.get_time_step_size();
+        approx_state.v_y += 0.5 * sim.lin_acc_y * sim.get_time_step_size();
         approx_state.Y += approx_state.v_y * sim.get_time_step_size();
-        approx_state.v_y += 0.5 * sim.avg_lin_acc_y * sim.get_time_step_size();
+        approx_state.v_y += 0.5 * sim.lin_acc_y * sim.get_time_step_size();
 
-        approx_state.r += 0.5 * sim.avg_ang_acc_phi * sim.get_time_step_size();
+        approx_state.r += 0.5 * sim.ang_acc_phi * sim.get_time_step_size();
         approx_state.phi += approx_state.r * sim.get_time_step_size();
-        approx_state.r += 0.5 * sim.avg_ang_acc_phi * sim.get_time_step_size();
+        approx_state.r += 0.5 * sim.ang_acc_phi * sim.get_time_step_size();
         x_traj_approx.push_back(approx_state);
     }
 }
