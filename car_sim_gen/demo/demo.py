@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from car_sim_gen.car_model import calc_wheel_physics
-from generate_car_sim import generate_car_sim
+from car_sim_gen.generate_car_sim import generate_car_sim
 from car_sim_gen.constants import CarConstants
 
 
@@ -31,29 +31,22 @@ def main():
     # 0.2 => R=1.32
 
     delta = 0.1
-    for j in np.linspace(0.2, 1.0, num=20):
-        for i in range(1000):
-            step(sim_solver, np.array([j, delta, delta, 0, 0]))
-            x_traj.append(sim_solver.get("x"))
-
+    j = 0.5
+    for i in range(3000):
+        step(sim_solver, np.array([j, delta, delta, 0, 0]))
+        x_traj.append(sim_solver.get("x"))
         Fx_val, Fy_val, car_torque_val = wheel0_forces_func(sim_solver.get("x"), np.array([j, delta, delta, 0, 0]),
-                                                            sim_solver.sim_struct.parameter_values)
+                           sim_solver.sim_struct.parameter_values)
         print(Fx_val, Fy_val, car_torque_val)
-    # for i in range(3000):
-    #     step(sim_solver, np.array([j, delta, delta, 0, 0]))
-    #     x_traj.append(sim_solver.get("x"))
-    #     Fx_val, Fy_val, car_torque_val = wheel0_forces_func(sim_solver.get("x"), np.array([j, delta, delta, 0, 0]),
-    #                        sim_solver.sim_struct.parameter_values)
-    #     print(Fx_val, Fy_val, car_torque_val)
-    # for i in range(1000):
-    #     step(sim_solver, np.array([0.8, 0.2, 0.2, 0, 0]))
-    #     x_traj.append(sim_solver.get("x"))
-    # for i in range(1000):
-    #     step(sim_solver, np.array([1.0, 0.0, 0.0, 0, 0]))
-    #     x_traj.append(sim_solver.get("x"))
-    # for i in range(2000):
-    #     step(sim_solver, np.array([1.0, -0.3, -0.3, 0, 0]))
-    #     x_traj.append(sim_solver.get("x"))
+    for i in range(1000):
+        step(sim_solver, np.array([0.6, 0.2, 0.2, 0, 0]))
+        x_traj.append(sim_solver.get("x"))
+    for i in range(1000):
+        step(sim_solver, np.array([0.8, 0.0, 0.0, 0, 0]))
+        x_traj.append(sim_solver.get("x"))
+    for i in range(2000):
+        step(sim_solver, np.array([0.5, -0.3, -0.3, 0, 0]))
+        x_traj.append(sim_solver.get("x"))
 
     print("final state", sim_solver.get("x"))
     x_traj = np.array(x_traj)
@@ -64,7 +57,7 @@ def main():
     plt.axis('equal')
     plt.gca().set_xlabel("x [m]")
     plt.gca().set_ylabel("y [m]")
-    plt.savefig('../doc/demo.png')
+    plt.savefig('../../doc/demo.png')
     plt.show()
 
 

@@ -5,8 +5,8 @@ import numpy as np
 
 from acados_template.acados_ocp_formulation_helper import get_symbol, auto_xdot
 
-from constants import CarConstants, WheelConstants
-from quantities import CarPhysicalQuantities, WheelPhysicalQuantities
+from .constants import CarConstants, WheelConstants
+from .quantities import CarPhysicalQuantities, WheelPhysicalQuantities
 
 
 def create_car_model(constants=None, model_name="car"):
