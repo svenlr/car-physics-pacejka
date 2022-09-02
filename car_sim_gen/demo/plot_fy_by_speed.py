@@ -4,8 +4,8 @@ import casadi
 import numpy as np
 import matplotlib.pyplot as plt
 
-from car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces, \
-    calc_wheel_physics
+from car_sim_gen.car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, \
+    calc_wheel_centric_forces, calc_wheel_physics
 from car_sim_gen.constants import WheelConstants
 
 from acados_template.acados_ocp_formulation_helper import get_symbol_idx
@@ -55,13 +55,13 @@ def main():
         u_val[get_symbol_idx(model.x, "delta0")] = 0.1
         u_val[get_symbol_idx(model.x, "delta1")] = 0.1
         fx, fy, t = model_func(x_val, u_val, p_val)
-        Fx_vals.append(fx)
-        torque_vals.append(t)
+        Fx_vals.append(np.squeeze(fx))
+        torque_vals.append(np.squeeze(t))
     plt.plot(vx_vals, torque_vals, label="torque")
     plt.plot(vx_vals, Fx_vals, label="Fx")
     plt.gca().set_xlabel("vx [m/s]")
     plt.gca().set_ylabel("Fx [N] / Torque [Nm]")
-    plt.gca().set_title('Fy and Torque at a single wheel with increasing vx')
+    plt.gca().set_title('Fx and Torque at a single wheel with increasing vx')
     plt.legend()
 
     plt.show()

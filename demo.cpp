@@ -55,10 +55,10 @@ int main(int argc, char **argv) {
         xa.push_back(state_approx.X);
         ya.push_back(state_approx.Y);
     }
-//    plt::plot(x, y);
-//    plt::plot(xa, ya, "x");
-//    plt::axis("equal");
-//    plt::show();
+    plt::plot(x, y);
+    plt::plot(xa, ya, "x");
+    plt::axis("equal");
+    plt::show();
 
     plt::named_plot("r", s, r);
     plt::named_plot("omega", s, omega);

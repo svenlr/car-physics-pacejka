@@ -4,7 +4,8 @@ import casadi
 import numpy as np
 import matplotlib.pyplot as plt
 
-from car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces
+from car_sim_gen.car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, \
+    calc_wheel_centric_forces
 from car_sim_gen.constants import WheelConstants
 
 if __name__ == '__main__':
@@ -47,7 +48,7 @@ if __name__ == '__main__':
             Fx_val, Fy_val = calc_forces(1, 1, vsy_val, p_val)
             Fy_vals.append(Fy_val)
             Fx_vals.append(Fx_val)
-        plt.plot(np.arctan2(vsy_vals, 1), -np.array(Fy_vals))
+        plt.plot(np.arctan2(vsy_vals, 1).squeeze(), -np.array(Fy_vals).squeeze())
 
     # plt.plot(vsy_vals, Fx_vals, label=r"$F_x$")
     # plt.plot(vsy_vals, np.clip(-18 * vsy_vals, np.min(Fy_vals), np.max(Fy_vals)), label=r"$F_y^{lin}$")
@@ -57,5 +58,4 @@ if __name__ == '__main__':
     # plt.gca().set_title(r"$v_x=1.1$ $v_r=1$")
     plt.legend()
 
-    plt.savefig("/home/sven/ma-mpc/tex/images/fy_varying_fz.pdf", bbox_inches="tight")
     plt.show()

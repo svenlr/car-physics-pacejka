@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-from car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces
+from car_sim_gen.car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces
 from car_sim_gen.constants import WheelConstants
 
 if __name__ == '__main__':
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         p_val = [Fz_val] * 4 + p_val[4:]
         for vsx_val in vsx_vals:
             Fx_val, Fy_val = calc_forces(1, 1 + vsx_val, 0, p_val)
-            Fx_vals.append(Fx_val)
+            Fx_vals.append(np.squeeze(Fx_val))
 
         plots[0].plot(vsx_vals, -np.array(Fx_vals))
 
@@ -76,8 +76,8 @@ if __name__ == '__main__':
         p_val = [Fz_val] * 4 + p_val[4:]
         for vsy_val in vsy_vals:
             Fx_val, Fy_val = calc_forces(1, 1, vsy_val, p_val)
-            Fy_vals.append(Fy_val)
-            Fx_vals.append(Fx_val)
+            Fy_vals.append(np.squeeze(Fy_val))
+            Fx_vals.append(np.squeeze(Fx_val))
         plots[1].plot(np.arctan2(vsy_vals, 1), -np.array(Fy_vals))
 
 
@@ -96,5 +96,4 @@ if __name__ == '__main__':
     # plt.gca().set_title(r"$v_x=1.1$ $v_r=1$")
     plt.legend(handlelength=0, handletextpad=0)
 
-    plt.savefig("/home/sven/ma-mpc/tex/images/fxy_varying_fz.pdf", bbox_inches="tight")
     plt.show()

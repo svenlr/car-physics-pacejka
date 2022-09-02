@@ -1,11 +1,13 @@
+#!/usr/bin/env python
+
 import os
 import shutil
 import numpy as np
 
 from acados_template import AcadosSim, AcadosSimSolver
 
-from .car_model import create_car_model
-from .generate_cpp_utils import generate_model_structs
+from car_sim_gen.car_model import create_car_model
+from car_sim_gen.generate_cpp_utils import generate_model_structs
 
 
 def generate_car_sim(code_export_dir, time_step=0.001, num_stages=1, num_steps=1):

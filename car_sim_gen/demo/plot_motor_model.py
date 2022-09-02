@@ -3,8 +3,8 @@ from matplotlib import pyplot as plt
 import casadi
 from casadi import MX
 
-from car_model import calc_motor_torque
-from constants import CarConstants
+from car_sim_gen.car_model import calc_motor_torque
+from car_sim_gen.constants import CarConstants
 
 if __name__ == '__main__':
     c = CarConstants()
@@ -18,7 +18,6 @@ if __name__ == '__main__':
     torques = []
     for omega_val in omegas:
         torque = calc_torque(1, omega_val)
-        torques.append(torque)
+        torques.append(np.squeeze(torque))
     plt.plot(omegas, torques)
-    plt.savefig("../doc/motor_model.png")
     plt.show()

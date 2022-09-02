@@ -50,7 +50,8 @@ target_link_libraries(car_physics_pacejka
         )
 
 if (Python3_FOUND)
-    add_executable(demo demo.cpp)
-    target_include_directories(demo SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/generated ${matplotlib_INCLUDE_DIRS})
-    target_link_libraries(demo car_physics_pacejka ${matplotlib_LIBRARIES})
+    add_executable(demo CarSimulation.cpp demo.cpp)
+    target_include_directories(demo SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/generated ${matplotlib_INCLUDE_DIRS}
+            ${ACADOS_INCLUDE_DIRS})
+    target_link_libraries(demo ${matplotlib_LIBRARIES} ${ACADOS_LIBRARIES} acados_sim_solver_car)
 endif()

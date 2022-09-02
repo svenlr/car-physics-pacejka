@@ -3,7 +3,7 @@ function(add_generated_library)
     set(multiValueArgs COMMAND INCLUDE_DIRS DEPENDS)
     cmake_parse_arguments(GEN_LIB "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     add_custom_command(
-            COMMAND ${GEN_LIB_COMMAND}
+            COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="$ENV{PYTHONPATH}:${CMAKE_CURRENT_SOURCE_DIR}" ${GEN_LIB_COMMAND}
             OUTPUT "${GEN_LIB_OUTPUT}"
             WORKING_DIRECTORY "${GEN_LIB_WORKING_DIRECTORY}"
             DEPENDS ${GEN_LIB_DEPENDS}

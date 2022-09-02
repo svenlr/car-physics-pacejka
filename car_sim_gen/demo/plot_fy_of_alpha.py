@@ -4,7 +4,8 @@ import casadi
 import numpy as np
 import matplotlib.pyplot as plt
 
-from car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces
+from car_sim_gen.car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, \
+    calc_wheel_centric_forces
 from car_sim_gen.constants import WheelConstants
 
 if __name__ == '__main__':
@@ -40,8 +41,8 @@ if __name__ == '__main__':
     Fx_vals = []
     for vsy_val in vsy_vals:
         Fx_val, Fy_val = calc_forces(1, 1.1, vsy_val, p_val)
-        Fy_vals.append(Fy_val)
-        Fx_vals.append(Fx_val)
+        Fy_vals.append(np.squeeze(Fy_val))
+        Fx_vals.append(np.squeeze(Fx_val))
 
     plt.rcParams.update({'font.size': 18})
 
@@ -55,5 +56,4 @@ if __name__ == '__main__':
     plt.legend()
 
     plt.savefig("../doc/fy_of_vy.png")
-    plt.savefig("/home/sven/ma-mpc/tex/images/rwpacejka.pdf", bbox_inches="tight")
     plt.show()

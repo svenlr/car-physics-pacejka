@@ -1,12 +1,11 @@
-from acados_template import AcadosModel, AcadosOcpConstraints, AcadosOcp
-from casadi import tanh, sin, cos, MX, types, interpolant, vertcat, Function, atan, sign, tan
 import casadi
 import numpy as np
-
+from acados_template import AcadosModel
 from acados_template.acados_ocp_formulation_helper import get_symbol, auto_xdot
+from casadi import sin, cos, MX, vertcat, atan, sign
 
-from .constants import CarConstants, WheelConstants
-from .quantities import CarPhysicalQuantities, WheelPhysicalQuantities
+from car_sim_gen.constants import CarConstants, WheelConstants
+from car_sim_gen.quantities import CarPhysicalQuantities
 
 
 def create_car_model(constants=None, model_name="car"):

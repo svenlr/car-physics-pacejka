@@ -4,7 +4,8 @@ import casadi
 import numpy as np
 import matplotlib.pyplot as plt
 
-from car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, calc_wheel_centric_forces
+from car_sim_gen.car_model import calc_wheel_centric_velocities, create_car_model, calc_sigma_xy, \
+    calc_wheel_centric_forces
 from car_sim_gen.constants import WheelConstants
 import matplotlib.patches as patches
 
@@ -111,5 +112,4 @@ if __name__ == '__main__':
     # plt.gca().set_ylabel(r"$F_y$ [N]")
     # plt.gca().set_title(r"$v_x=1.1$ $v_r=1$")
 
-    plt.savefig("/home/sven/ma-mpc/tex/images/f_varying_C_E.pdf", bbox_inches="tight")
     plt.show()
