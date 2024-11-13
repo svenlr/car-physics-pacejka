@@ -32,7 +32,7 @@ force and torque to be applied to the car within the next millisecond.
 
 ## Installation
 ### Prerequisites
-- Install acados: https://github.com/acados/acados
+- Install acados: https://github.com/svenlr/acados
 - Install acados Python Interface: https://docs.acados.org/python_interface/index.html#installation
 - Optional, for C++ demo: Python3 installation with numpy and matplotlib (dependency of matplotlibcpp)
 
