@@ -1,13 +1,8 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(car_physics_pacejka)
 
-## Compile as C++14
-add_compile_options(-std=c++14)
-
-if(NOT DEFINED ENV{ACADOS_SOURCE_DIR})
-    message(ERROR "Either acados is not installed or ACADOS_SOURCE_DIR is unset.")
-    return()
-endif()
+## Compile as C++17
+add_compile_options(-std=c++17)
 
 include(cmake/add_generated_library.cmake)
 include(cmake/download_matplotlib.cmake)
@@ -19,39 +14,51 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/generated)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/generated)
 endif()
 
+find_package(acados REQUIRED)
+
+cmake_path(GET acados_DIR PARENT_PATH acados_INSTALL_DIR)
+
+set(acados_LIBRARY_DIRS ${acados_INSTALL_DIR}/lib)
+set(acados_INCLUDE_DIRS ${acados_INSTALL_DIR}/include)
+
+message("${acados_INCLUDE_DIRS}")
+
 add_generated_library(
         TARGET acados_sim_solver_car
-        COMMAND python3 car_sim_gen/generate_car_sim.py
+        COMMAND car_sim_gen/generate_car_sim.py ${acados_INSTALL_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/generated/libacados_sim_solver_car.so
         DEPENDS ${PY_SIM_GEN_FILES}
         INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/generated
         )
 
-set(ACADOS_INCLUDE_DIRS
-        $ENV{ACADOS_SOURCE_DIR}/include
-        $ENV{ACADOS_SOURCE_DIR}/include/blasfeo/include
-        $ENV{ACADOS_SOURCE_DIR}/include/hpipm/include
-        )
-set(ACADOS_LIBRARIES
-        -L$ENV{ACADOS_SOURCE_DIR}/lib -lacados -lhpipm -lblasfeo -lm
-        )
+# get_cmake_property(_variableNames VARIABLES)
+# list (SORT _variableNames)
+# foreach (_variableName ${_variableNames})
+#     message(STATUS "${_variableName}=${${_variableName}}")
+# endforeach()
 
 add_library(car_physics_pacejka SHARED
         CarSimulation.cpp
         )
-target_include_directories(car_physics_pacejka SYSTEM PRIVATE
-        ${ACADOS_INCLUDE_DIRS}
+
+include_directories(${acados_INCLUDE_DIRS})
+
+target_include_directories(car_physics_pacejka SYSTEM PUBLIC
+        ${acados_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/generated
         )
+
+target_link_directories(car_physics_pacejka PUBLIC ${acados_LIBRARY_DIRS})
 target_link_libraries(car_physics_pacejka
-        ${ACADOS_LIBRARIES}
+        -lacados -lhpipm -lblasfeo -lm
         acados_sim_solver_car
         )
+
 
 if (Python3_FOUND)
     add_executable(demo CarSimulation.cpp demo.cpp)
     target_include_directories(demo SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/generated ${matplotlib_INCLUDE_DIRS}
-            ${ACADOS_INCLUDE_DIRS})
-    target_link_libraries(demo ${matplotlib_LIBRARIES} ${ACADOS_LIBRARIES} acados_sim_solver_car)
+            ${acados_INCLUDE_DIRS})
+    target_link_libraries(demo ${matplotlib_LIBRARIES} ${acados_LIBRARIES} acados_sim_solver_car)
 endif()

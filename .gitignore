@@ -39,3 +39,4 @@ generated/
 *.app
 
 __pycache__/
+build/

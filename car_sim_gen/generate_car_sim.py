@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+import sys
 import os
 import shutil
 import numpy as np
@@ -30,11 +31,14 @@ def generate_car_sim(code_export_dir, time_step=0.001, num_stages=1, num_steps=1
 
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        os.environ["ACADOS_SOURCE_DIR"] = sys.argv[1]
+        os.environ["LD_LIBRARY_PATH"] = f"{sys.argv[1]}/lib:" + os.environ.get("LD_LIBRARY_PATH", "")
     top_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     sim_solver = generate_car_sim(os.path.join(top_dir, "generated"))
-    model = sim_solver.sim_struct.model
-    model_types_h = generate_model_structs(model, sim_solver.sim_struct.solver_options.T, "car_sim",
-                                           default_params=sim_solver.sim_struct.parameter_values)
+    model = sim_solver.acados_sim.model
+    model_types_h = generate_model_structs(model, sim_solver.acados_sim.solver_options.T, "car_sim",
+                                           default_params=sim_solver.acados_sim.parameter_values)
     try:
         with open(os.path.join(top_dir, "generated", "car_model_types.h")) as f:
             update_model_types_h = f.read() != model_types_h

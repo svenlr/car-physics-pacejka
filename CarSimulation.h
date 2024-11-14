@@ -6,7 +6,7 @@
 #include <vector>
 #include <car_model_types.h>
 
-struct sim_solver_capsule;
+#include "acados_sim_solver_car.h"
 
 namespace car_sim {
 
